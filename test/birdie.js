@@ -19,9 +19,4 @@ describe('Birdie', () => {
     expect(await birdie.symbol()).to.eq('BRD');
     expect(await birdie.decimals()).to.eq(18);
   });
-
-  it('test', async () => {
-    console.log('valid:', (await birdie.test_1820('0x1430F4CB9D123F1542d908a29D6987bA05a858e3')));
-    console.log('invalid:', (await birdie.test_1820(users[0].address)));
-  });
 });
