@@ -22,7 +22,6 @@ async function deployFunc({
   const Birdie = await deploy('Birdie', {
     ...baseArgs,
     args: [
-      [], // default operators
       RewardDispenser.address || tempAddress,
       ProShop.address || tempAddress,
       networkConfig.multiSigAddress,

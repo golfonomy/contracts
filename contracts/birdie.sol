@@ -10,12 +10,11 @@ contract Birdie is ERC777, AccessControl {
   bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
   constructor(
-    address[] memory defaultOperators,
     address _rewardDispenser,
     address _marketplace,
     address _multiSigManager,
     uint _initialSupply
-  ) ERC777("Birdie", "BRD", defaultOperators)
+  ) ERC777("Birdie", "BRD", new address[](0))
   {
     _setupRole(DEFAULT_ADMIN_ROLE, _multiSigManager);
     _setupRole(MINTER_ROLE, _rewardDispenser);
