@@ -31,8 +31,31 @@ async function signPermit(owner, spender, amount, contract) {
   return [owner, spender, value, deadline, v, r, s];
 }
 
+async function grantBalance(address, faucet, amount) {
+  const faucetSigner = await ethers.getSigner(faucet);
+  await faucetSigner.sendTransaction({
+    to: address,
+    value: amount
+  });
+}
+
+async function impersonateAccount(address, faucet, contracts) {  
+  if((await ethers.provider.getBalance(address)).lt(.001 * 10**18)) {
+    await grantBalance(address, faucet, `${1 * 10**18}`);
+  }
+  
+  await ethers.provider.send(
+    'hardhat_impersonateAccount',
+    [address]
+  );
+
+  return setupUser(address, contracts);
+}
+
 module.exports = {
   setupUsers,
   setupUser,
-  signPermit
+  signPermit,
+  impersonateAccount,
+  toWei: Web3.utils.toWei
 }

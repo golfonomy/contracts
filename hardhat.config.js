@@ -11,7 +11,7 @@ const { DEV_DEPLOYER_KEY, PROD_DEPLOYER_KEY, DEV_API_URL, PROD_API_URL } = proce
 
 module.exports = {
   solidity: {
-    version: "0.8.15",
+    version: "0.8.16",
     settings: {
       optimizer: {
         enabled: true
@@ -23,11 +23,13 @@ module.exports = {
       forking: {
         url: PROD_API_URL
       },
-      chainId: 1 // mimick mainnet
+      chainId: 1, // mimick mainnet
+      multiSigAddress: '0x2fEdE9b23513493CdB69c40739da868088D5313d'
     },
     goerli: {
       url: DEV_API_URL,
-      accounts: [`0x${DEV_DEPLOYER_KEY}`]
+      accounts: [`0x${DEV_DEPLOYER_KEY}`],
+      multiSigAddress: '0x2fEdE9b23513493CdB69c40739da868088D5313d'
     },
     mainnet: {
       url: PROD_API_URL,
