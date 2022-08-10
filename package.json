@@ -5,9 +5,9 @@
   "scripts": {
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
-    "sourcify-dev": "npx hardhat --network fuji sourcify",
+    "sourcify-dev": "npx hardhat --network goerli sourcify",
     "sourcify-prod": "npx hardhat --network mainnet sourcify",
-    "deploy-dev": "npx hardhat --network fuji deploy",
+    "deploy-dev": "npx hardhat --network goerli deploy",
     "deploy-prod": "npx hardhat --network mainnet deploy",
     "flatten": "script/flatten.sh"
   },

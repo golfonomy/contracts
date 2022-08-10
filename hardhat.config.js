@@ -7,7 +7,7 @@ require('hardhat-deploy');
 require('hardhat-contract-sizer');
 require('hardhat-deploy-ethers');
 
-const { DEV_DEPLOYER_KEY, PROD_DEPLOYER_KEY } = process.env;
+const { DEV_DEPLOYER_KEY, PROD_DEPLOYER_KEY, DEV_API_URL, PROD_API_URL } = process.env;
 
 module.exports = {
   solidity: {
@@ -21,18 +21,16 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        url: 'https://api.avax.network/ext/bc/C/rpc'
+        url: PROD_API_URL
       },
-      chainId: 43114 // mimick mainnet avax
+      chainId: 1 // mimick mainnet
     },
-    fuji: {
-      url: 'https://api.avax-test.network/ext/bc/C/rpc',
-      chainId: 43113,
+    goerli: {
+      url: DEV_API_URL,
       accounts: [`0x${DEV_DEPLOYER_KEY}`]
     },
     mainnet: {
-      url: 'https://api.avax.network/ext/bc/C/rpc',
-      chainId: 43114,
+      url: PROD_API_URL,
       accounts: [`0x${PROD_DEPLOYER_KEY}`]
     }
   },
