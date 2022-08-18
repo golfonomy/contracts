@@ -18,8 +18,6 @@ async function deployFunc({
     log: true
   }
 
-  tempAddress = networkConfig.multiSigAddress;
-
   const Birdie = await deploy('Birdie', {
     ...baseArgs,
     args: [
