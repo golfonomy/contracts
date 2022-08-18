@@ -1,6 +1,10 @@
 const Web3 = require('web3');
 const utils = Web3.utils;
 
+const MINTER_ROLE = utils.keccak256("MINTER_ROLE");
+const BURNER_ROLE = utils.keccak256("BURNER_ROLE");
+const DEFAULT_ADMIN_ROLE = utils.padLeft('0x00', 64);
+
 async function deployFunc({
   deployments,
   getNamedAccounts,
@@ -14,20 +18,40 @@ async function deployFunc({
     log: true
   }
 
-  const RewardDispenser = {};
-  const ProShop = {};
-
   tempAddress = networkConfig.multiSigAddress;
 
   const Birdie = await deploy('Birdie', {
     ...baseArgs,
     args: [
-      RewardDispenser.address || tempAddress,
-      ProShop.address || tempAddress,
       networkConfig.multiSigAddress,
       utils.toWei('1000000') // initial supply
     ]
   });
+
+  const RewardClaim = await deploy('RewardClaim', {
+    ...baseArgs,
+    args: [
+      networkConfig.multiSigAddress,
+      deployer,
+      Birdie.address
+    ]
+  });
+
+  await deployments.execute(
+    'Birdie',
+    baseArgs,
+    'grantRole',
+    MINTER_ROLE,
+    RewardClaim.address
+  );
+
+  await deployments.execute(
+    'Birdie',
+    baseArgs,
+    'renounceRole',
+    DEFAULT_ADMIN_ROLE,
+    deployer
+  );
 }
 
 deployFunc.tags = ['main']; // tag for tests

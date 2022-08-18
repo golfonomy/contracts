@@ -1,7 +1,7 @@
 {
-  "name": "contracts",
+  "name": "@golfonomy/contracts",
   "version": "1.0.0",
-  "description": "Smart Contracts",
+  "description": "Golfonomy Smart Contracts",
   "scripts": {
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
@@ -11,13 +11,25 @@
     "deploy-prod": "npx hardhat --network mainnet deploy",
     "flatten": "script/flatten.sh"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/golfonomy/contracts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/golfonomy/contracts/issues"
+  },
+  "homepage": "https://github.com/golfonomy/contracts#readme",
   "devDependencies": {
+    "@metamask/eth-sig-util": "^4.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@openzeppelin/contracts": "^4.4.0",
     "chai": "^4.3.4",
     "chai-ethers": "^0.0.1",
     "dotenv": "^10.0.0",
     "eth-permit": "^0.2.1",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "^5.5.1",
     "hardhat": "^2.7.0",
     "hardhat-contract-sizer": "^2.1.1",
