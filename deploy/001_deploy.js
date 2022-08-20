@@ -26,6 +26,15 @@ async function deployFunc({
     ]
   });
 
+  const MemberCard = await deploy('MemberCard', {
+    ...baseArgs,
+    args: [
+      networkConfig.multiSigAddress,
+      ['testType'], // TOOD: set intial types and baseURI
+      "https://testing.com/"
+    ]
+  });
+
   const RewardClaim = await deploy('RewardClaim', {
     ...baseArgs,
     args: [
@@ -45,6 +54,14 @@ async function deployFunc({
 
   await deployments.execute(
     'Birdie',
+    baseArgs,
+    'renounceRole',
+    DEFAULT_ADMIN_ROLE,
+    deployer
+  );
+
+  await deployments.execute(
+    'MemberCard',
     baseArgs,
     'renounceRole',
     DEFAULT_ADMIN_ROLE,
