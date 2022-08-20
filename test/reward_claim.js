@@ -24,22 +24,22 @@ describe('RewardClaim', () => {
   });
 
   describe('rotateServiceAccount', () => {
-    it('is only callable by current serviceAccount and multiSig', () => {
-      expect(users[0].rewardClaim.rotateServiceAccount(users[0].address)).to.be.revertedWith('Sender not permitted');
-      expect(multiSigAccount.rewardClaim.rotateServiceAccount(multiSigAccount.address)).to.not.be.reverted;
-      expect(deployer.rewardClaim.rotateServiceAccount(multiSigAccount.address)).to.not.be.reverted;
+    it('is only callable by current serviceAccount and multiSig', async () => {
+      await expect(users[0].rewardClaim.rotateServiceAccount(users[0].address)).to.be.revertedWith('Sender not permitted');
+      await expect(multiSigAccount.rewardClaim.rotateServiceAccount(deployer.address)).to.not.be.reverted;
+      await expect(deployer.rewardClaim.rotateServiceAccount(multiSigAccount.address)).to.not.be.reverted;
     });
 
     it('updates serviceAccount with new account', async () => {
       await deployer.rewardClaim.rotateServiceAccount(users[0].address);
-      expect(users[0].rewardClaim.rotateServiceAccount(users[1].address)).to.not.be.reverted;
+      await expect(users[0].rewardClaim.rotateServiceAccount(users[1].address)).to.not.be.reverted;
     });
   });
 
   describe('togglePause', () => {
-    it('is only callable by multiSigManager', () => {
-      expect(deployer.rewardClaim.togglePause()).to.be.revertedWith('Sender not permitted');
-      expect(multiSigAccount.rewardClaim.togglePause()).to.not.be.reverted;
+    it('is only callable by multiSigManager', async () => {
+      await expect(deployer.rewardClaim.togglePause()).to.be.revertedWith('Sender not permitted');
+      await expect(multiSigAccount.rewardClaim.togglePause()).to.not.be.reverted;
     });
 
     it('toggles paused state', async () => {
@@ -57,31 +57,31 @@ describe('RewardClaim', () => {
 
     it('only allows when unpaused', async () => {
       let claimSig = await claimSignature(users[1].address, toWei('10'), rewardClaim);
-      expect(users[1].rewardClaim.claim(claimSig)).to.not.be.reverted;
+      await expect(users[1].rewardClaim.claim(claimSig)).to.not.be.reverted;
       await multiSigAccount.rewardClaim.togglePause();
-      expect(users[1].rewardClaim.claim(claimSig)).to.be.revertedWith('Reward claiming is paused');
+      await expect(users[1].rewardClaim.claim(claimSig)).to.be.revertedWith('Reward claiming is paused');
     });
 
     it('does not allow sender to be the service account', async () => {
       let claimSig = await claimSignature(users[0].address, toWei('10'), rewardClaim);
-      expect(users[0].rewardClaim.claim(claimSig)).to.be.revertedWith('Service account not allowed to claim');
+      await expect(users[0].rewardClaim.claim(claimSig)).to.be.revertedWith('Service account not allowed to claim');
     });
 
     it('does not allow out of date claim signatures', async () => {
       let claimSig = await claimSignature(users[1].address, toWei('10'), rewardClaim, Math.round(new Date() / 1000) - 600);
-      expect(users[1].rewardClaim.claim(claimSig)).to.be.revertedWith('Expired claim deadline');
+      await expect(users[1].rewardClaim.claim(claimSig)).to.be.revertedWith('Expired claim deadline');
     });
 
     it('does not allow a claim signature to be used more than once', async () => {
       let claimSig = await claimSignature(users[1].address, toWei('10'), rewardClaim);
-      expect(users[1].rewardClaim.claim(claimSig)).to.not.be.reverted;
-      expect(users[1].rewardClaim.claim(claimSig)).to.be.revertedWith('Invalid claim signature');
+      await expect(users[1].rewardClaim.claim(claimSig)).to.not.be.reverted;
+      await expect(users[1].rewardClaim.claim(claimSig)).to.be.revertedWith('Invalid claim signature');
     });
   
     it('requires a valid claim signature', async () => {
       let claimSig = await claimSignature(users[1].address, toWei('10'), rewardClaim);
-      expect(users[2].rewardClaim.claim(claimSig)).to.be.reverted;
-      expect(users[1].rewardClaim.claim(claimSig)).to.not.be.reverted;
+      await expect(users[2].rewardClaim.claim(claimSig)).to.be.reverted;
+      await expect(users[1].rewardClaim.claim(claimSig)).to.not.be.reverted;
     });
   
     it('dispenses to recipient', async () => {
