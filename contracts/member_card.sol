@@ -23,51 +23,51 @@ contract MemberCard is ERC721("MemberCard", "MBR"), AccessControl {
   event UpdatedBaseURI(string newBaseURI, uint timestamp);
   event CreatedType(uint indexed typeIndex, uint timestamp);
 
-  constructor (address _multiSigManager, string[] memory _initialTypes, string memory _baseURI) {
-    _typeNames = _initialTypes;
-    _baseTokenURI = _baseURI;
-    _setupRole(DEFAULT_ADMIN_ROLE, _multiSigManager);
+  constructor (address multiSigManager, string[] memory initialTypes, string memory baseURI) {
+    _typeNames = initialTypes;
+    _baseTokenURI = baseURI;
+    _setupRole(DEFAULT_ADMIN_ROLE, multiSigManager);
     _setupRole(DEFAULT_ADMIN_ROLE, msg.sender); // revoked immediately after deployment has finished
   }
 
-  function mint(address _to, uint32 _type) external onlyRole(MINTER_ROLE) returns(uint tokenId) {
-    require(_type < _typeNames.length, 'Invalid token type');
+  function mint(address to, uint32 tokenType) external onlyRole(MINTER_ROLE) returns(uint tokenId) {
+    require(tokenType < _typeNames.length, 'Invalid token type');
 
     tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
-    _safeMint(_to, tokenId);
-    _types[tokenId] = _type;
+    _types[tokenId] = tokenType;
+    _safeMint(to, tokenId);
   }
 
   /*** TOKEN INFO FUNCTIONS ***/
 
-  function typeOf(uint _tokenId) public view returns(uint32 tokenType, string memory typeName) {
-    _requireMinted(_tokenId);
+  function typeOf(uint tokenId) public view returns(uint32 tokenType, string memory typeName) {
+    _requireMinted(tokenId);
 
-    tokenType = _types[_tokenId];
+    tokenType = _types[tokenId];
     typeName = _typeNames[tokenType];
   }
 
-  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
-    _requireMinted(_tokenId);
+  function tokenURI(uint256 tokenId) public view override returns (string memory) {
+    _requireMinted(tokenId);
 
     if (bytes(_baseTokenURI).length == 0) {
       return "";
     }
 
-    (, string memory tokenTypeName) = typeOf(_tokenId);
-    return string(abi.encodePacked(_baseTokenURI, tokenTypeName, "/", Strings.toString(_tokenId)));
+    (, string memory tokenTypeName) = typeOf(tokenId);
+    return string(abi.encodePacked(_baseTokenURI, tokenTypeName, "/", Strings.toString(tokenId)));
   }
 
   /*** ADMIN FUNCTIONS ***/
 
-  function setBaseURI(string memory _newURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    _baseTokenURI = _newURI;
-    emit UpdatedBaseURI(_newURI, block.timestamp);
+  function setBaseURI(string memory newURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _baseTokenURI = newURI;
+    emit UpdatedBaseURI(newURI, block.timestamp);
   }
 
-  function createType(string memory _newTypeName) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    _typeNames.push(_newTypeName);
+  function createType(string memory newTypeName) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _typeNames.push(newTypeName);
     emit CreatedType(_typeNames.length - 1, block.timestamp);
   }
 

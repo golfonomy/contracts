@@ -11,7 +11,7 @@ const { DEV_DEPLOYER_KEY, PROD_DEPLOYER_KEY, DEV_API_URL, PROD_API_URL, DEV_MULT
 
 module.exports = {
   solidity: {
-    version: "0.8.16",
+    version: "0.8.7",
     settings: {
       optimizer: {
         enabled: true
