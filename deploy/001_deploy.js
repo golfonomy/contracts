@@ -30,7 +30,6 @@ async function deployFunc({
     ...baseArgs,
     args: [
       networkConfig.multiSigAddress,
-      ['testType'], // TOOD: set intial types and baseURI
       "https://testing.com/"
     ]
   });
