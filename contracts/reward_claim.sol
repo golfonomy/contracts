@@ -10,12 +10,12 @@ import "./IBirdie.sol";
 
 contract RewardClaim is EIP712("RewardClaim", "1") {
   bool public paused;
+  mapping(address => uint) public nonces;
+
   address private _serviceAccount;
   address private immutable _multiSigManager;
   IBirdie private immutable _birdie;
-
   bytes32 private constant CLAIM_TYPEHASH = keccak256("Claim(address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
-  mapping(address => uint) public nonces;
 
   event RotatedServiceAccount(address indexed newAccount, uint timestamp);
 
@@ -34,7 +34,6 @@ contract RewardClaim is EIP712("RewardClaim", "1") {
 
     _multiSigManager = multiSigManager;
     _serviceAccount = serviceAccount;
-    paused = false;
     _birdie = IBirdie(birdie);
   }
 
