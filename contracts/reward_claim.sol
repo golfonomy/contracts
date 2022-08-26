@@ -46,7 +46,7 @@ contract RewardClaim is EIP712("RewardClaim", "1") {
     verifySignature(claimSignature);
     require(msg.sender == claimSignature.recipient, "Sender is not the intended recipient");
 
-    _birdie.dispense(msg.sender, claimSignature.amount, "", "");
+    _birdie.dispense(msg.sender, claimSignature.amount);
   }
 
   /*** ADMIN FUNCTIONS ***/

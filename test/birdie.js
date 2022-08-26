@@ -32,12 +32,12 @@ describe('Birdie', () => {
     });
 
     it('is restricted to MINTER_ROLE', async () => {
-      await expect(multiSigAccount.birdie.dispense(users[0].address, toWei('10'), 0x00, 0x00)).to.be.reverted;
-      await expect(users[0].birdie.dispense(users[0].address, toWei('10'), 0x00, 0x00)).to.not.be.reverted;
+      await expect(multiSigAccount.birdie.dispense(users[0].address, toWei('10'))).to.be.reverted;
+      await expect(users[0].birdie.dispense(users[0].address, toWei('10'))).to.not.be.reverted;
     });
 
     it('mints token to target account', async () => {
-      await users[0].birdie.dispense(users[0].address, toWei('10'), 0x00, 0x00);
+      await users[0].birdie.dispense(users[0].address, toWei('10'));
       expect(await birdie.balanceOf(users[0].address)).to.eq(toWei('10'));
     });
   });
@@ -49,14 +49,14 @@ describe('Birdie', () => {
     });
 
     it('is restricted to BURNER_ROLE', async () => {
-      await expect(multiSigAccount.birdie.destroy(users[0].address, toWei('10'), 0x00, 0x00)).to.be.reverted;
-      await users[0].birdie.dispense(users[0].address, toWei('10'), 0x00, 0x00);
-      await expect(users[0].birdie.destroy(users[0].address, toWei('10'), 0x00, 0x00)).to.not.be.reverted;
+      await expect(multiSigAccount.birdie.destroy(users[0].address, toWei('10'))).to.be.reverted;
+      await users[0].birdie.dispense(users[0].address, toWei('10'));
+      await expect(users[0].birdie.destroy(users[0].address, toWei('10'))).to.not.be.reverted;
     });
 
     it('removes token from target account', async () => {
-      await users[0].birdie.dispense(users[0].address, toWei('10'), 0x00, 0x00);
-      await users[0].birdie.destroy(users[0].address, toWei('5'), 0x00, 0x00);
+      await users[0].birdie.dispense(users[0].address, toWei('10'));
+      await users[0].birdie.destroy(users[0].address, toWei('5'));
       expect(await birdie.balanceOf(users[0].address)).to.eq(toWei('5'));
     });
   });
