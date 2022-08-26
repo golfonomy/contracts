@@ -21,7 +21,7 @@ contract Birdie is ERC20("Birdie", "BRD"), AccessControl, IBirdie {
   /*** USER FUNCTIONS ***/
 
   function transferWithData(address to, uint amount, bytes memory userData) external {
-    address owner = msg.sender;    
+    address owner = msg.sender;
     _transfer(owner, to, amount);
     emit TransferData(owner, to, amount, userData);
   }

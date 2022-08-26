@@ -1,6 +1,7 @@
 const { expect } = require('./chai-setup');
 const { setupUsers, toWei, impersonateAccount, Roles } = require('./utils');
 const { ethers, deployments, getNamedAccounts, getUnnamedAccounts, network } = require('hardhat');
+const { utils } = require('web3');
 
 let deployer;
 let birdie;
@@ -65,6 +66,30 @@ describe('Birdie', () => {
     it('only has multiSigAccount in DEFAULT_ADMIN_ROLE', async () => {
       expect(await birdie.hasRole(Roles.defaultAdmin, multiSigAccount.address)).to.eq(true);
       expect(await birdie.hasRole(Roles.defaultAdmin, deployer)).to.eq(false);
+    });
+  });
+
+  describe('transferWithData', () => {
+    beforeEach(async () => {
+      await multiSigAccount.birdie.grantRole(Roles.minter, users[0].address);
+      await users[0].birdie.dispense(users[0].address, toWei('10'));
+    });
+
+    it('transfers token amount', async () => {
+      await expect(users[1].birdie.transferWithData(users[2].address, toWei('10'), 0x00)).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+      await expect(users[0].birdie.transferWithData(users[1].address, toWei('5'), 0x00)).to.be.not.reverted;
+      expect(await birdie.balanceOf(users[0].address)).to.eq(toWei('5'));
+      expect(await birdie.balanceOf(users[1].address)).to.eq(toWei('5'));
+    });
+
+    it('emits TransferData on successful transfer', async () => {
+      let data = utils.encodePacked(
+        { type: 'uint32', value: '0' },
+        { type: 'string', value: 'upgrade' }
+      );
+
+      await expect(users[0].birdie.transferWithData(users[1].address, toWei('5'), data)).to.emit(birdie, "TransferData")
+        .withArgs(users[0].address, users[1].address, toWei('5'), data);
     });
   });
 });
