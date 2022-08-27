@@ -10,7 +10,7 @@ contract Birdie is ERC20("Birdie", "BRD"), AccessControl, IBirdie {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
   bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-  event TransferData(address indexed from, address indexed to, uint amount, bytes data);
+  event SpendData(address indexed owner, uint amount, bytes data);
 
   constructor(address multiSigManager, uint initialSupply) {
     _setupRole(DEFAULT_ADMIN_ROLE, multiSigManager);
@@ -20,10 +20,10 @@ contract Birdie is ERC20("Birdie", "BRD"), AccessControl, IBirdie {
 
   /*** USER FUNCTIONS ***/
 
-  function transferWithData(address to, uint amount, bytes memory userData) external {
+  function spend(uint amount, bytes memory userData) external {
     address owner = msg.sender;
-    _transfer(owner, to, amount);
-    emit TransferData(owner, to, amount, userData);
+    _burn(owner, amount);
+    emit SpendData(owner, amount, userData);
   }
 
   /*** SERVICE CONTRACT FUNCTIONS ***/
