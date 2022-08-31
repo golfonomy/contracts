@@ -35,6 +35,8 @@ contract ProShop {
   }
 
   constructor(address payable multiSigManager, address memberCard, CardType[] memory initialTypes) {
+    require(multiSigManager != address(0), "multiSigManager cannot be address 0");
+
     for(uint8 i = 0; i < initialTypes.length; i++) {
       _cardTypes.push(initialTypes[i]);
     }
@@ -55,10 +57,10 @@ contract ProShop {
     require(_purchaseCounts[msg.sender][typeIndex] < cardType.purchaseLimit, "Account has reached purchase limit");
     require(msg.value >= cardType.price, "Insufficient value");
 
-    _memberCard.mint(msg.sender);
     cardType.supply += 1;
     _purchaseCounts[msg.sender][typeIndex] += 1;
     emit PurchasedCard(typeIndex, cardType.name, cardType.price);
+    _memberCard.mint(msg.sender);
   }
 
   /*** ADMIN FUNCTIONS ***/
@@ -93,9 +95,9 @@ contract ProShop {
     uint balance = address(this).balance;
     require(balance > 0);
 
+    emit BalanceWithdrawl(balance, block.timestamp);
+
     (bool success, ) = _multiSigManager.call{value: balance}("");
     require(success, "Withdraw failed");
-
-    emit BalanceWithdrawl(balance, block.timestamp);
   }
 }
