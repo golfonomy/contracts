@@ -24,6 +24,7 @@
   "devDependencies": {
     "@metamask/eth-sig-util": "^4.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.4.0",
     "chai": "^4.3.4",
     "chai-ethers": "^0.0.1",

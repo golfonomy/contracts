@@ -43,13 +43,37 @@ async function deployFunc({
     ]
   });
 
-  await deployments.execute(
-    'Birdie',
-    baseArgs,
-    'grantRole',
-    MINTER_ROLE,
-    RewardClaim.address
-  );
+  const ProShop = await deploy('ProShop', {
+    ...baseArgs,
+    args: [
+      networkConfig.multiSigAddress,
+      MemberCard.address,
+      [
+        [utils.toWei('.05'), '0', '200000', '1', 'play'], // TOOD: set initial prices
+        [utils.toWei('.05'), '0', '200000', '1', 'practice']
+      ]
+    ]
+  });
+
+  if(Birdie.newlyDeployed) {
+    await deployments.execute(
+      'Birdie',
+      baseArgs,
+      'grantRole',
+      MINTER_ROLE,
+      RewardClaim.address
+    );
+  }
+
+  if(Birdie.newlyDeployed) {
+    await deployments.execute(
+      'MemberCard',
+      baseArgs,
+      'grantRole',
+      MINTER_ROLE,
+      ProShop.address
+    );
+  }
 
   await deployments.execute(
     'Birdie',

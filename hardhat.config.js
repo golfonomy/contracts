@@ -2,7 +2,7 @@
 * @type import('hardhat/config').HardhatUserConfig
 */
 require('dotenv/config');
-require("@nomiclabs/hardhat-ethers");
+require('@nomiclabs/hardhat-waffle');
 require('hardhat-deploy');
 require('hardhat-contract-sizer');
 require('hardhat-deploy-ethers');
@@ -15,7 +15,8 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true
-      }
+      },
+      viaIR: true
     }
   },
   networks: {

@@ -1,7 +1,7 @@
 const { ethers, getChainId } = require('hardhat');
 const { signERC2612Permit } = require('eth-permit');
 const Web3 = require('web3');
-const { signTypedData, SignTypedDataVersion, TypedDataUtils } = require('@metamask/eth-sig-util');
+const { signTypedData, SignTypedDataVersion } = require('@metamask/eth-sig-util');
 const { fromRpcSig } = require('ethereumjs-util');
 
 const utils = Web3.utils;
@@ -34,18 +34,6 @@ async function setupUser(address, contracts) {
     user[key] = contracts[key].connect(user.signer);
   }
   return user;
-}
-
-async function signPermit(owner, spender, amount, contract) {
-  const { r, s, v, value, deadline } = await signERC2612Permit(
-    ethers.provider,
-    contract,
-    owner,
-    spender,
-    amount
-  );
-
-  return [owner, spender, value, deadline, v, r, s];
 }
 
 async function grantBalance(address, faucet, amount) {
@@ -138,7 +126,6 @@ async function claimSignature(recipient, amount, contract, deadline, nonce) {
 module.exports = {
   setupUsers,
   setupUser,
-  signPermit,
   impersonateAccount,
   claimSignature,
   Roles,
