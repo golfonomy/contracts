@@ -1,8 +1,8 @@
 const { expect } = require('./chai-setup');
 const { setupUsers, toWei, impersonateAccount, claimSignature } = require('./utils');
-const { ethers, deployments, getNamedAccounts, getUnnamedAccounts, network } = require('hardhat');
+const { ethers, deployments, getUnnamedAccounts, network } = require('hardhat');
 
-let deployer;
+let serviceAccount;
 let birdie;
 let rewardClaim;
 let users;
@@ -11,12 +11,11 @@ let multiSigAccount;
 describe('RewardClaim', () => {
   beforeEach(async () => {
     await deployments.fixture(['main']);
-    deployer = (await getNamedAccounts()).deployer;
     birdie = await ethers.getContract('Birdie');
     rewardClaim = await ethers.getContract('RewardClaim');
     users = await setupUsers((await getUnnamedAccounts()), { rewardClaim });
     multiSigAccount = await impersonateAccount(network.config.multiSigAddress, users[0].address, { rewardClaim });
-    deployer = await impersonateAccount(deployer, users[1].address, { rewardClaim });
+    serviceAccount = await impersonateAccount(network.config.claimAccountAddress, users[1].address, { rewardClaim });
   });
 
   it('deploys with correct info', async () => {
@@ -26,19 +25,19 @@ describe('RewardClaim', () => {
   describe('rotateServiceAccount', () => {
     it('is only callable by current serviceAccount and multiSig', async () => {
       await expect(users[0].rewardClaim.rotateServiceAccount(users[0].address)).to.be.revertedWith('Sender not permitted');
-      await expect(multiSigAccount.rewardClaim.rotateServiceAccount(deployer.address)).to.not.be.reverted;
-      await expect(deployer.rewardClaim.rotateServiceAccount(multiSigAccount.address)).to.not.be.reverted;
+      await expect(serviceAccount.rewardClaim.rotateServiceAccount(users[5].address)).to.not.be.reverted;
+      await expect(multiSigAccount.rewardClaim.rotateServiceAccount(serviceAccount.address)).to.not.be.reverted;
     });
 
     it('updates serviceAccount with new account', async () => {
-      await deployer.rewardClaim.rotateServiceAccount(users[0].address);
+      await serviceAccount.rewardClaim.rotateServiceAccount(users[0].address);
       await expect(users[0].rewardClaim.rotateServiceAccount(users[1].address)).to.not.be.reverted;
     });
   });
 
   describe('togglePause', () => {
     it('is only callable by multiSigManager', async () => {
-      await expect(deployer.rewardClaim.togglePause()).to.be.revertedWith('Sender not permitted');
+      await expect(serviceAccount.rewardClaim.togglePause()).to.be.revertedWith('Sender not permitted');
       await expect(multiSigAccount.rewardClaim.togglePause()).to.not.be.reverted;
     });
 
@@ -52,7 +51,7 @@ describe('RewardClaim', () => {
 
   describe('claim', () => {
     beforeEach(async () => {
-      await deployer.rewardClaim.rotateServiceAccount(users[0].address);
+      await serviceAccount.rewardClaim.rotateServiceAccount(users[0].address);
     });
 
     it('only allows when unpaused', async () => {

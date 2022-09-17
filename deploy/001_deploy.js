@@ -12,6 +12,7 @@ async function deployFunc({
 }) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
+  const { multiSigAddress, claimAccountAddress } = networkConfig;
 
   const baseArgs = {
     from: deployer,
@@ -21,7 +22,7 @@ async function deployFunc({
   const Birdie = await deploy('Birdie', {
     ...baseArgs,
     args: [
-      networkConfig.multiSigAddress,
+      multiSigAddress,
       utils.toWei('1000000') // initial supply
     ]
   });
@@ -29,7 +30,7 @@ async function deployFunc({
   const MemberCard = await deploy('MemberCard', {
     ...baseArgs,
     args: [
-      networkConfig.multiSigAddress,
+      multiSigAddress,
       "https://testing.com/"
     ]
   });
@@ -37,8 +38,8 @@ async function deployFunc({
   const RewardClaim = await deploy('RewardClaim', {
     ...baseArgs,
     args: [
-      networkConfig.multiSigAddress,
-      deployer,
+      multiSigAddress,
+      claimAccountAddress,
       Birdie.address
     ]
   });
@@ -46,7 +47,7 @@ async function deployFunc({
   const ProShop = await deploy('ProShop', {
     ...baseArgs,
     args: [
-      networkConfig.multiSigAddress,
+      multiSigAddress,
       MemberCard.address,
       [
         [utils.toWei('.05'), '0', '200000', '1', 'play'], // TOOD: set initial prices
